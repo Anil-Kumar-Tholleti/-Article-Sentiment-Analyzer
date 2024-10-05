@@ -1,0 +1,49 @@
+import requests
+from bs4 import BeautifulSoup
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+def fetch_article_text(url):
+    try:
+        # Fetch the web page content
+        response = requests.get(url)
+        response.raise_for_status()  # Check for errors
+
+        # Parse the page content using BeautifulSoup
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Extract the text from the article (you can refine this based on the structure of the page)
+        paragraphs = soup.find_all('p')
+        article_text = ' '.join([para.get_text() for para in paragraphs])
+
+        return article_text
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching the article: {e}")
+        return None
+
+def analyze_sentiment_vader(text):
+    # Initialize the VADER sentiment analyzer
+    analyzer = SentimentIntensityAnalyzer()
+
+    # Get sentiment scores
+    sentiment_scores = analyzer.polarity_scores(text)
+
+    # Classify the overall sentiment based on the compound score
+    compound_score = sentiment_scores['compound']
+    
+    if compound_score >= 0.05:
+        return "Positive"
+    elif compound_score <= -0.05:
+        return "Negative"
+    else:
+        return "Neutral"
+
+if __name__ == "__main__":
+    # Example URL of an online article
+    url = input("Enter the article URL: ")
+    article_text = fetch_article_text(url)
+    
+    if article_text:
+        # Perform sentiment analysis using VADER
+        sentiment = analyze_sentiment_vader(article_text)
+        print(f"Sentiment of the article: {sentiment}")
