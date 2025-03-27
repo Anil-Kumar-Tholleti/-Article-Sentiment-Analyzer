@@ -47,3 +47,4 @@ if __name__ == "__main__":
         # Perform sentiment analysis using VADER
         sentiment = analyze_sentiment_vader(article_text)
         print(f"Sentiment of the article: {sentiment}")
+
